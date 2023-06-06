@@ -10,9 +10,18 @@ export type QuemarNURValues = {
   Units: string;
   Precio: string;
 };
+
+type validateNUR = {
+  cantidad: string;
+  ean: string;
+  fechaConsulta: string;
+  indicaciones: string;
+  medicamento: string;
+  nur: string;
+};
 function App() {
   const [nur, setNur] = useState<string>("");
-  const [result, setResult] = useState<any>();
+  const [resultValidate, setResultValidate] = useState<validateNUR>();
   const [quemarNURFormValues, setQuemarNURFormValues] =
     useState<QuemarNURValues>({
       Folio: "",
@@ -27,13 +36,27 @@ function App() {
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
-        setResult(result);
-        Swal.fire({
-          title: "Exito",
-          icon: "success",
-          text: `${result}`,
-        });
+        if (result.isSuccess === true) {
+          setResultValidate({
+            cantidad: result.data.medicamento.cantidad,
+            ean: result.data.medicamento.ean,
+            fechaConsulta: result.data.medicamento.fechaConsulta,
+            indicaciones: result.data.medicamento.indicaciones,
+            medicamento: result.data.medicamento.medicamento,
+            nur: result.data.medicamento.nur,
+          });
+          window.alert("NUR validado");
+        } else if (result.isSuccess === false) {
+          window.alert(`${JSON.stringify(result.error.errors)}`);
+          setResultValidate({
+            cantidad: "",
+            ean: "",
+            fechaConsulta: "",
+            indicaciones: "",
+            medicamento: "",
+            nur: "",
+          });
+        }
       })
       .catch((error) => window.alert(error));
   };
@@ -58,17 +81,25 @@ function App() {
     })
       .then((response) => response.json())
       .then((result) => {
-        Swal.fire({
-          title: "Exito",
-          icon: "success",
-          text: `NUR Quemado con éxito ${result}`,
-        });
+        if (result.isSuccess === true) {
+          Swal.fire({
+            title: "Exito",
+            icon: "success",
+            text: `NUR Quemado con éxito`,
+          });
+        } else if (result.isSuccess === false) {
+          Swal.fire({
+            title: "Error",
+            icon: "error",
+            text: `${JSON.stringify(result.error.errors)}`,
+          });
+        }
       })
       .catch((error) =>
         Swal.fire({
           title: "Error",
           icon: "error",
-          text: `NUR Quemado sin éxito ${error}`,
+          text: `Ocurrió un error${error}`,
         })
       );
   };
@@ -78,13 +109,21 @@ function App() {
       redirect: "follow",
     })
       .then((response) => response.json())
-      .then((result) =>
-        Swal.fire({
-          title: "Exito",
-          icon: "success",
-          text: `NUR Congelado con éxito ${result}`,
-        })
-      )
+      .then((result) => {
+        if (result.isSuccess === true) {
+          Swal.fire({
+            title: "Exito",
+            icon: "success",
+            text: `NUR Congelado con éxito ${result}`,
+          });
+        } else if (result.isSuccess === false) {
+          Swal.fire({
+            title: "Error",
+            icon: "error",
+            text: `${JSON.stringify(result.error.errors)}`,
+          });
+        }
+      })
       .catch((error) => window.alert(error));
   };
 
@@ -92,38 +131,38 @@ function App() {
     <div className="App w-screen h-screen code flex flex-col items-center justify-center gap-4">
       <div className="flex flex-row w-10/12 items-start gap-4">
         <SearchBar setNur={setNur} nur={nur} onValidate={onValidate} />
-        {/* {result && (
+        {resultValidate && (
           <div className="border border-white rounded-lg border-opacity-20 p-5">
             <ul className="text-white text-sm flex flex-col items-start justify-center">
               <li>
+                <span>NUR: </span>
+                {resultValidate.nur}
+              </li>
+              <li>
                 <span>EAN: </span>
-                {result.data.medicamento.ean}
+                {resultValidate.ean}
               </li>
               <li>
                 <span>Cantidad: </span>
-                {result.data.medicamento.cantidad}
+                {resultValidate.cantidad}
               </li>
               <li>
                 <span>Fecha de Consulta: </span>
-                {result.data.medicamento.fechaConsulta}
+                {resultValidate.fechaConsulta}
               </li>
               <li>
                 <span>Indicaciones: </span>
-                {result.data.medicamento.indicaciones}
+                {resultValidate.indicaciones}
               </li>
               <li>
                 <span>Medicamento: </span>
-                {result.data.medicamento.medicamento}
-              </li>
-              <li>
-                <span>NUR: </span>
-                {result.data.medicamento.nur}
+                {resultValidate.medicamento}
               </li>
             </ul>
           </div>
-        )} */}
+        )}
       </div>
-      <div className="flex flex-row w-10/12 items-start gap-4">
+      <div className="flex flex-row w-10/12 items-start justify-center  gap-4">
         <QuemarNUR
           formValues={quemarNURFormValues}
           onChangeValues={setQuemarNURFormValues}

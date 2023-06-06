@@ -9,7 +9,9 @@ export type CongelarNURProps = {
 export const CongelarNUR = ({ nur, onCongelar, setNur }: CongelarNURProps) => {
   return (
     <div className="border border-white border-opacity-20 w-1/2 p-4 rounded-lg  gap-4 flex flex-col items-center justify-center">
+      <span className="text-white font-semibold text-xl">Congelar NUR</span>
       <input
+        placeholder="NUR"
         type="text"
         className="w-full h-10 rounded-lg text-center text-lg font-semibold"
         value={nur}

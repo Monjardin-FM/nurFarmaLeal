@@ -23,6 +23,7 @@ export const QuemarNUR = ({
   };
   return (
     <div className="w-1/2 border border-white border-opacity-20 rounded-lg flex flex-col items-center justify-center gap-5 p-4">
+      <span className="text-white font-semibold text-xl">Quemar NUR</span>
       <div className="w-full flex flex-row items-center justify-start">
         <span className="w-1/4  text-white">Folio</span>
         <input
